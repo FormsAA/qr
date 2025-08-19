@@ -50,7 +50,19 @@
         <div id="message-container"></div>
     </div>
 
-    <!-- PANTALLA DE ESCANEO A PANTALLA COMPLETA (NUEVO) -->
+    <!-- PANTALLA DE SELECCIÓN DE ESCANEO (NUEVO) -->
+    <div id="scan-choice-screen" class="screen modal-overlay">
+        <div class="modal-content">
+            <h2>Seleccionar Método</h2>
+            <button id="open-camera-btn">Abrir Cámara</button>
+            <button id="upload-image-btn">Subir Imagen de Galería</button>
+            <button id="cancel-choice-btn" class="back-btn">Cancelar</button>
+        </div>
+    </div>
+    <input type="file" id="qr-image-input" accept="image/*" style="display: none;">
+
+
+    <!-- PANTALLA DE ESCANEO A PANTALLA COMPLETA -->
     <div id="scanner-screen" class="screen">
         <div id="qr-reader-full"></div>
         <button id="cancel-scan-btn">Cancelar</button>
