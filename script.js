@@ -7,6 +7,7 @@ document.addEventListener('DOMContentLoaded', () => {
         register: document.getElementById('register-screen'),
         login: document.getElementById('login-screen'),
         game: document.getElementById('game-screen'),
+        scanner: document.getElementById('scanner-screen') // Nueva pantalla
     };
 
     const buttons = {
@@ -15,6 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
         back: document.querySelectorAll('.back-btn'),
         scanQR: document.getElementById('scan-qr-btn'),
         logout: document.getElementById('logout-btn'),
+        cancelScan: document.getElementById('cancel-scan-btn') // Nuevo botón
     };
 
     const forms = {
@@ -29,45 +31,41 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const messageContainer = document.getElementById('message-container');
-    const qrReaderDiv = document.getElementById('qr-reader');
     let html5QrCode;
 
     function showScreen(screenName) {
+        // Oculta el contenedor principal si se muestra el escáner
+        document.getElementById('app-container').style.display = screenName === 'scanner' ? 'none' : 'flex';
+        
         Object.values(screens).forEach(screen => screen.classList.remove('active'));
         screens[screenName].classList.add('active');
-        messageContainer.textContent = ''; // Clear messages on screen change
+        messageContainer.textContent = ''; // Limpia mensajes al cambiar de pantalla
     }
 
     function showMessage(message, isError = true) {
         messageContainer.textContent = message;
-        messageContainer.style.color = isError ? '#D8000C' : '#4F8A10'; // Red for error, Green for success
+        messageContainer.style.color = isError ? '#D8000C' : '#4F8A10'; // Rojo para error, Verde para éxito
         setTimeout(() => messageContainer.textContent = '', 4000);
     }
 
-    // Generic function to handle POST requests to the Apps Script
     async function apiPost(action, data) {
         try {
             const response = await fetch(SCRIPT_URL, {
                 method: 'POST',
                 mode: 'cors',
-                headers: { "Content-Type": "text/plain;charset=utf-8" }, // Use text/plain for Apps Script POST
+                headers: { "Content-Type": "text/plain;charset=utf-8" },
                 body: JSON.stringify({ action, ...data })
             });
-
-            if (!response.ok) {
-                throw new Error(`Network response was not ok: ${response.statusText}`);
-            }
+            if (!response.ok) throw new Error(`Network response was not ok: ${response.statusText}`);
             return await response.json();
-
         } catch (error) {
             console.error('API Error:', error);
-            showMessage("A network error occurred. Please try again.");
-            return { success: false, message: "A network error occurred." };
+            showMessage("Ocurrió un error de red. Intenta de nuevo.");
+            return { success: false, message: "Ocurrió un error de red." };
         }
     }
 
-    // --- Event Listeners ---
-
+    // --- Lógica de Navegación y Formularios (sin cambios) ---
     buttons.showLogin.addEventListener('click', () => showScreen('login'));
     buttons.showRegister.addEventListener('click', () => showScreen('register'));
     buttons.back.forEach(btn => btn.addEventListener('click', () => showScreen('initial')));
@@ -75,10 +73,6 @@ document.addEventListener('DOMContentLoaded', () => {
     buttons.logout.addEventListener('click', () => {
         localStorage.removeItem('userEmail');
         showScreen('initial');
-        if (html5QrCode && html5QrCode.isScanning) {
-            html5QrCode.stop();
-        }
-        qrReaderDiv.style.display = 'none';
         document.getElementById('login-email').value = '';
         document.getElementById('register-email').value = '';
     });
@@ -86,35 +80,27 @@ document.addEventListener('DOMContentLoaded', () => {
     forms.register.addEventListener('submit', async (e) => {
         e.preventDefault();
         const email = document.getElementById('register-email').value.trim();
-        if (!email) {
-            showMessage("Please enter an email.");
-            return;
-        }
-
+        if (!email) { showMessage("Por favor, ingresa un correo."); return; }
         const result = await apiPost('register', { email });
         if (result.success) {
             showMessage(result.message, false);
             showScreen('login');
         } else {
-            showMessage(result.message || "Registration failed.");
+            showMessage(result.message || "Falló el registro.");
         }
     });
 
     forms.login.addEventListener('submit', async (e) => {
         e.preventDefault();
         const email = document.getElementById('login-email').value.trim();
-        if (!email) {
-            showMessage("Please enter an email.");
-            return;
-        }
-        
+        if (!email) { showMessage("Por favor, ingresa un correo."); return; }
         const result = await apiPost('login', { email });
         if (result.success) {
             localStorage.setItem('userEmail', result.user.email);
             updateUserInfo(result.user);
             showScreen('game');
         } else {
-            showMessage(result.message || "Login failed.");
+            showMessage(result.message || "Falló el inicio de sesión.");
         }
     });
 
@@ -126,28 +112,57 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
     
-    buttons.scanQR.addEventListener('click', () => {
-        qrReaderDiv.style.display = 'block';
-        if (!html5QrCode) {
-            html5QrCode = new Html5Qrcode("qr-reader");
+    // --- LÓGICA DEL ESCÁNER DE QR (ACTUALIZADA) ---
+
+    function stopScanner() {
+        if (html5QrCode && html5QrCode.isScanning) {
+            html5QrCode.stop().then(() => {
+                console.log("QR Scanner stopped.");
+            }).catch(err => {
+                console.error("Failed to stop QR scanner.", err);
+            });
         }
+    }
+
+    buttons.scanQR.addEventListener('click', () => {
+        showScreen('scanner');
+        html5QrCode = new Html5Qrcode("qr-reader-full");
 
         const qrCodeSuccessCallback = (decodedText, decodedResult) => {
-            html5QrCode.stop().then(() => {
-                qrReaderDiv.style.display = 'none';
-                handleQRScan(decodedText);
-            }).catch(err => console.error("Error stopping QR scanner", err));
+            stopScanner();
+            showScreen('game');
+            handleQRScan(decodedText);
         };
         
-        const config = { fps: 10, qrbox: { width: 250, height: 250 } };
+        const config = { 
+            fps: 10, 
+            qrbox: (viewfinderWidth, viewfinderHeight) => {
+                const minEdge = Math.min(viewfinderWidth, viewfinderHeight);
+                const qrboxSize = Math.floor(minEdge * 0.7); // Usa el 70% del lado más corto
+                return {
+                    width: qrboxSize,
+                    height: qrboxSize
+                };
+            },
+            supportedScanTypes: [Html5QrcodeScanType.SCAN_TYPE_CAMERA]
+        };
+
         html5QrCode.start({ facingMode: "environment" }, config, qrCodeSuccessCallback)
-            .catch(err => showMessage("Could not start QR scanner. Check camera permissions."));
+            .catch(err => {
+                showMessage("No se pudo iniciar el escáner. Revisa los permisos de la cámara.");
+                showScreen('game');
+            });
+    });
+
+    buttons.cancelScan.addEventListener('click', () => {
+        stopScanner();
+        showScreen('game');
     });
 
     async function handleQRScan(qrData) {
         const scannerEmail = localStorage.getItem('userEmail');
         if (!scannerEmail) {
-            showMessage("You must be logged in to scan.");
+            showMessage("Debes iniciar sesión para escanear.");
             return;
         }
 
@@ -155,33 +170,30 @@ document.addEventListener('DOMContentLoaded', () => {
         
         if (result.success) {
             showMessage(result.message, false);
-            updateUserInfo(result.user); // Update UI with data returned from the server
+            updateUserInfo(result.user);
         } else {
-            showMessage(result.message || "Failed to process QR code.");
+            showMessage(result.message || "No se pudo procesar el QR.");
         }
     }
     
-    // --- Initial Page Load ---
-    
+    // --- Carga Inicial de la Página (sin cambios) ---
     async function checkLoggedInUser() {
         const loggedInUser = localStorage.getItem('userEmail');
         if (loggedInUser) {
-            // Use GET request for fetching initial data
             try {
                 const url = `${SCRIPT_URL}?action=getUserData&email=${encodeURIComponent(loggedInUser)}`;
                 const response = await fetch(url);
                 const result = await response.json();
-                
                 if (result.success) {
                     updateUserInfo(result.user);
                     showScreen('game');
                 } else {
-                    localStorage.removeItem('userEmail'); // Clear invalid stored email
+                    localStorage.removeItem('userEmail');
                     showScreen('initial');
                 }
             } catch (error) {
                 console.error("Error checking logged in user:", error);
-                showScreen('initial'); // Default to initial screen on error
+                showScreen('initial');
             }
         } else {
             showScreen('initial');
@@ -190,4 +202,3 @@ document.addEventListener('DOMContentLoaded', () => {
     
     checkLoggedInUser();
 });
-
