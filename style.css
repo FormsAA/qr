@@ -1,0 +1,87 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f0f2f5;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+
+#app-container {
+    background-color: white;
+    padding: 2em;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    width: 90%;
+    max-width: 400px;
+    text-align: center;
+}
+
+.screen {
+    display: none;
+}
+
+.screen.active {
+    display: block;
+}
+
+h1, h2 {
+    color: #333;
+}
+
+input[type="email"] {
+    width: calc(100% - 20px);
+    padding: 10px;
+    margin-bottom: 1em;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+button {
+    width: 100%;
+    padding: 12px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1em;
+    margin-bottom: 0.5em;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+.back-btn, #logout-btn {
+    background-color: #6c757d;
+}
+
+.back-btn:hover, #logout-btn:hover {
+    background-color: #5a6268;
+}
+
+#user-info {
+    text-align: left;
+    margin-bottom: 1.5em;
+    background-color: #e9ecef;
+    padding: 1em;
+    border-radius: 4px;
+}
+
+#user-info p {
+    margin: 0.5em 0;
+}
+
+#message-container {
+    margin-top: 1em;
+    color: red;
+    font-weight: bold;
+}
+
+#qr-reader {
+    width: 100%;
+    border: 1px solid #ccc;
+    margin-top: 1em;
+}

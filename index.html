@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Juego de QR</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="app-container">
+        <div id="initial-screen" class="screen active">
+            <h1>Bienvenido al Juego QR</h1>
+            <button id="show-login-btn">Ya estoy registrado</button>
+            <button id="show-register-btn">Soy Nuevo</button>
+        </div>
+
+        <div id="register-screen" class="screen">
+            <h2>Registro de Nuevo Usuario</h2>
+            <form id="register-form">
+                <input type="email" id="register-email" placeholder="Ingresa tu correo" required>
+                <button type="submit">Registrarme</button>
+                <button type="button" class="back-btn">Volver</button>
+            </form>
+        </div>
+
+        <div id="login-screen" class="screen">
+            <h2>Iniciar Sesión</h2>
+            <form id="login-form">
+                <input type="email" id="login-email" placeholder="Ingresa tu correo" required>
+                <button type="submit">Ingresar</button>
+                <button type="button" class="back-btn">Volver</button>
+            </form>
+        </div>
+
+        <div id="game-screen" class="screen">
+            <h2>Menú Principal</h2>
+            <div id="user-info">
+                <p><strong>Correo:</strong> <span id="user-email"></span></p>
+                <p><strong>Puntos:</strong> <span id="user-points"></span></p>
+                <p><strong>Posición:</strong> <span id="user-position"></span></p>
+            </div>
+            <button id="scan-qr-btn">Obtener Puntos (Escanear QR)</button>
+            <button id="logout-btn">Cerrar Sesión</button>
+            <div id="qr-reader" style="display: none;"></div>
+        </div>
+
+        <div id="message-container"></div>
+    </div>
+
+    <script src="https://unpkg.com/html5-qrcode/minified/html5-qrcode.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
