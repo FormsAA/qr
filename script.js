@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwg3uEDGNE6Vl90GDFwe-vQmxd2VzO3w6d6cLom603OXKTIP06LCMzUfvkmdJDu6bPq/exec";
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycby6WfSPoAN0_h5r4Ar_JnbhT7-nDSsZ1b2ltGPEZiYBhk7D2ugly0zNE-5B_l-RNa0/exec";
 
     const screens = {
         initial: document.getElementById('initial-screen'),
@@ -168,4 +168,5 @@ document.addEventListener('DOMContentLoaded', () => {
     } else {
         showScreen('initial');
     }
+
 });
