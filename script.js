@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycby6WfSPoAN0_h5r4Ar_JnbhT7-nDSsZ1b2ltGPEZiYBhk7D2ugly0zNE-5B_l-RNa0/exec";
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwg3uEDGNE6Vl90GDFwe-vQmxd2VzO3w6d6cLom603OXKTIP06LCMzUfvkmdJDu6bPq/exec";
 
     const screens = {
         initial: document.getElementById('initial-screen'),
@@ -31,6 +31,22 @@ document.addEventListener('DOMContentLoaded', () => {
     const qrReaderDiv = document.getElementById('qr-reader');
     let html5QrCode;
 
+    // -------- API Helper --------
+    async function callAPI(action, payload = {}) {
+        try {
+            const response = await fetch(SCRIPT_URL, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ action, ...payload })
+            });
+            return await response.json();
+        } catch (err) {
+            console.error("Error API:", err);
+            return { success: false, message: "Error de red" };
+        }
+    }
+
+    // -------- UI Helpers --------
     function showScreen(screenName) {
         Object.values(screens).forEach(screen => screen.classList.remove('active'));
         screens[screenName].classList.add('active');
@@ -42,9 +58,17 @@ document.addEventListener('DOMContentLoaded', () => {
         setTimeout(() => messageContainer.textContent = '', 4000);
     }
 
+    function updateUserInfo(user) {
+        userInfo.email.textContent = user.email;
+        userInfo.points.textContent = user.points;
+        userInfo.position.textContent = user.position;
+    }
+
+    // -------- Navegación --------
     buttons.showLogin.addEventListener('click', () => showScreen('login'));
     buttons.showRegister.addEventListener('click', () => showScreen('register'));
     buttons.back.forEach(btn => btn.addEventListener('click', () => showScreen('initial')));
+
     buttons.logout.addEventListener('click', () => {
         localStorage.removeItem('userEmail');
         showScreen('initial');
@@ -54,68 +78,40 @@ document.addEventListener('DOMContentLoaded', () => {
         qrReaderDiv.style.display = 'none';
     });
 
-    forms.register.addEventListener('submit', (e) => {
+    // -------- Registro --------
+    forms.register.addEventListener('submit', async (e) => {
         e.preventDefault();
         const email = document.getElementById('register-email').value;
-        handleUserData('register', { email });
+        const result = await callAPI("register", { email });
+        if (result.success) {
+            showMessage(result.message, false);
+            showScreen('login');
+        } else {
+            showMessage(result.message);
+        }
     });
 
-    forms.login.addEventListener('submit', (e) => {
+    // -------- Login --------
+    forms.login.addEventListener('submit', async (e) => {
         e.preventDefault();
         const email = document.getElementById('login-email').value;
-        handleUserData('login', { email });
+        const result = await callAPI("login", { email });
+        if (result.success) {
+            localStorage.setItem("userEmail", result.user.email);
+            updateUserInfo(result.user);
+            showScreen("game");
+        } else {
+            showMessage(result.message);
+        }
     });
 
-    async function handleUserData(action, data) {
-        const url = `${SCRIPT_URL}?action=${action}&email=${encodeURIComponent(data.email)}`;
-        
-        try {
-            const response = await fetch(url, {
-                method: 'POST',
-                mode: 'no-cors', // Para evitar problemas de CORS con Apps Script
-                redirect: 'follow',
-                headers: {
-                    "Content-Type": "application/x-www-form-urlencoded"
-                }
-            });
-
-            // Con no-cors no podemos leer la respuesta, así que asumimos éxito y verificamos
-            if (action === 'register') {
-                showMessage("Registro enviado. Intenta iniciar sesión.", false);
-                showScreen('login');
-            } else if (action === 'login') {
-                // Hacemos otra llamada para obtener los datos del usuario
-                const getUserUrl = `${SCRIPT_URL}?action=getUserData&email=${encodeURIComponent(data.email)}`;
-                const userResponse = await fetch(getUserUrl);
-                const result = await userResponse.json();
-                
-                if (result.success) {
-                    localStorage.setItem('userEmail', result.user.email);
-                    updateUserInfo(result.user);
-                    showScreen('game');
-                } else {
-                    showMessage(result.message || "No se pudo iniciar sesión.");
-                }
-            }
-        } catch (error) {
-            console.error('Error:', error);
-            showMessage("Ocurrió un error de red.");
-        }
-    }
-
-    function updateUserInfo(user) {
-        userInfo.email.textContent = user.email;
-        userInfo.points.textContent = user.points;
-        userInfo.position.textContent = user.position;
-    }
-    
-    // Lógica para escanear QR
+    // -------- Escaneo QR --------
     buttons.scanQR.addEventListener('click', () => {
         qrReaderDiv.style.display = 'block';
         html5QrCode = new Html5Qrcode("qr-reader");
 
-        const qrCodeSuccessCallback = (decodedText, decodedResult) => {
-            handleQRScan(decodedText);
+        const qrCodeSuccessCallback = async (decodedText) => {
+            await handleQRScan(decodedText);
             html5QrCode.stop().then(() => {
                 qrReaderDiv.style.display = 'none';
             }).catch(err => console.log(err));
@@ -126,47 +122,32 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     async function handleQRScan(qrData) {
-        const scannerEmail = localStorage.getItem('userEmail');
+        const scannerEmail = localStorage.getItem("userEmail");
         if (!scannerEmail) {
             showMessage("Debes iniciar sesión para escanear.");
             return;
         }
-
-        const url = `${SCRIPT_URL}?action=scanQR&email=${encodeURIComponent(scannerEmail)}&qrData=${encodeURIComponent(qrData)}`;
-        
-        try {
-             const response = await fetch(url, {
-                method: 'POST',
-                mode: 'no-cors'
-            });
-
-            // Tras el escaneo, volvemos a pedir los datos del usuario para actualizar
-             setTimeout(async () => {
-                const getUserUrl = `${SCRIPT_URL}?action=getUserData&email=${encodeURIComponent(scannerEmail)}`;
-                const userResponse = await fetch(getUserUrl);
-                const result = await userResponse.json();
-                
-                if (result.success) {
-                    updateUserInfo(result.user);
-                    // No podemos leer la respuesta del POST, pero podemos dar un mensaje genérico
-                    showMessage("Escaneo procesado. Puntos actualizados.", false);
-                } else {
-                     showMessage("No se pudo actualizar la información.");
-                }
-            }, 2000); // Damos un tiempo para que el script procese
-            
-        } catch (error) {
-            console.error('Error:', error);
-            showMessage("Error al procesar el QR.");
+        const result = await callAPI("scanQR", { email: scannerEmail, qrData });
+        if (result.success) {
+            updateUserInfo(result.user);
+            showMessage(result.message, false);
+        } else {
+            showMessage(result.message);
         }
     }
     
-    // Verificar si el usuario ya está logueado al cargar la página
+    // -------- Autologin --------
     const loggedInUser = localStorage.getItem('userEmail');
-    if(loggedInUser){
-        handleUserData('login', { email: loggedInUser });
+    if (loggedInUser) {
+        callAPI('login', { email: loggedInUser }).then(result => {
+            if (result.success) {
+                updateUserInfo(result.user);
+                showScreen('game');
+            } else {
+                showScreen('initial');
+            }
+        });
     } else {
         showScreen('initial');
     }
-
 });
