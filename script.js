@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // !!! IMPORTANT: Paste your new Web App URL from Google Apps Script here !!!
+    // !!! IMPORTANTE: Pega aquí la URL de tu nueva Web App de Google Apps Script !!!
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyAeB-VRZOhkxe3k20Uz78-wQHZs9tYa4sb_yFB_A6He9iYGxz6xTEjr-vZjfJErg_T/exec";
 
     const screens = {
@@ -65,7 +65,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // --- Lógica de Navegación y Formularios (sin cambios) ---
+    // --- Lógica de Navegación y Formularios ---
     buttons.showLogin.addEventListener('click', () => showScreen('login'));
     buttons.showRegister.addEventListener('click', () => showScreen('register'));
     buttons.back.forEach(btn => btn.addEventListener('click', () => showScreen('initial')));
@@ -134,19 +134,22 @@ document.addEventListener('DOMContentLoaded', () => {
             handleQRScan(decodedText);
         };
         
+        // --- CORRECCIÓN AQUÍ ---
+        // Se eliminó la línea 'supportedScanTypes' que causaba el error.
+        // La librería por defecto usa la cámara, así que no es necesaria.
         const config = { 
             fps: 10, 
             qrbox: (viewfinderWidth, viewfinderHeight) => {
                 const minEdge = Math.min(viewfinderWidth, viewfinderHeight);
-                const qrboxSize = Math.floor(minEdge * 0.7); // Usa el 70% del lado más corto
+                const qrboxSize = Math.floor(minEdge * 0.7);
                 return {
                     width: qrboxSize,
                     height: qrboxSize
                 };
-            },
-            supportedScanTypes: [Html5QrcodeScanType.SCAN_TYPE_CAMERA]
+            }
         };
 
+        // Esta función ahora debería pedir los permisos de la cámara correctamente.
         html5QrCode.start({ facingMode: "environment" }, config, qrCodeSuccessCallback)
             .catch(err => {
                 showMessage("No se pudo iniciar el escáner. Revisa los permisos de la cámara.");
@@ -176,7 +179,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
     
-    // --- Carga Inicial de la Página (sin cambios) ---
+    // --- Carga Inicial de la Página ---
     async function checkLoggedInUser() {
         const loggedInUser = localStorage.getItem('userEmail');
         if (loggedInUser) {
