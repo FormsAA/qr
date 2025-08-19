@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
     // !!! IMPORTANTE: Pega aquí la URL de tu nueva Web App de Google Apps Script !!!
-    const SCRIPT_URL = "PASTE_YOUR_NEW_WEB_APP_URL_HERE";
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyAeB-VRZOhkxe3k20Uz78-wQHZs9tYa4sb_yFB_A6He9iYGxz6xTEjr-vZjfJErg_T/exec";
 
     const screens = {
         initial: document.getElementById('initial-screen'),
@@ -213,3 +213,4 @@ document.addEventListener('DOMContentLoaded', () => {
     
     checkLoggedInUser();
 });
+
