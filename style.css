@@ -7,7 +7,7 @@ body {
     align-items: center;
     height: 100vh;
     margin: 0;
-    overflow: hidden; /* Evita el scroll en el cuerpo */
+    overflow: hidden;
 }
 
 #app-container {
@@ -19,6 +19,8 @@ body {
     max-width: 400px;
     text-align: center;
     box-sizing: border-box;
+    display: flex; /* Cambiado a flex para que se oculte correctamente */
+    flex-direction: column;
 }
 
 .screen {
@@ -86,20 +88,58 @@ button:hover {
     min-height: 20px;
 }
 
-/* --- NUEVOS ESTILOS PARA EL ESCÁNER A PANTALLA COMPLETA --- */
-
-#scanner-screen {
-    position: fixed; /* Se superpone a todo */
+/* --- NUEVOS ESTILOS PARA EL MODAL DE SELECCIÓN --- */
+.modal-overlay {
+    position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: #000; /* Fondo negro */
+    background-color: rgba(0, 0, 0, 0.6);
     display: none; /* Se activa con JS */
+    justify-content: center;
+    align-items: center;
+    z-index: 999;
+}
+
+.modal-overlay.active {
+    display: flex; /* Cambiado a flex para centrar el contenido */
+}
+
+.modal-content {
+    background-color: white;
+    padding: 2em;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 350px;
+    text-align: center;
+}
+
+#upload-image-btn {
+    background-color: #28a745; /* Verde */
+}
+#upload-image-btn:hover {
+    background-color: #218838;
+}
+
+
+/* --- ESTILOS PARA EL ESCÁNER A PANTALLA COMPLETA (sin cambios) --- */
+#scanner-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #000;
+    display: none;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    z-index: 1000; /* Se asegura que esté por encima de todo */
+    z-index: 1000;
+}
+
+#scanner-screen.active {
+    display: flex;
 }
 
 #qr-reader-full {
@@ -107,7 +147,6 @@ button:hover {
     height: 100%;
 }
 
-/* Estilo para que el video de la cámara llene el contenedor */
 #qr-reader-full video {
     width: 100%;
     height: 100%;
@@ -119,7 +158,7 @@ button:hover {
     bottom: 30px;
     width: 80%;
     max-width: 300px;
-    background-color: rgba(220, 53, 69, 0.8); /* Rojo con transparencia */
+    background-color: rgba(220, 53, 69, 0.8);
     border: 1px solid rgba(255, 255, 255, 0.5);
 }
 
