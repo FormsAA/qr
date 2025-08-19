@@ -1,21 +1,24 @@
+/* Estilos generales (sin cambios) */
 body {
-    font-family: Arial, sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     background-color: #f0f2f5;
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100vh;
     margin: 0;
+    overflow: hidden; /* Evita el scroll en el cuerpo */
 }
 
 #app-container {
     background-color: white;
     padding: 2em;
     border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
     width: 90%;
     max-width: 400px;
     text-align: center;
+    box-sizing: border-box;
 }
 
 .screen {
@@ -31,23 +34,26 @@ h1, h2 {
 }
 
 input[type="email"] {
-    width: calc(100% - 20px);
-    padding: 10px;
+    width: 100%;
+    padding: 12px;
     margin-bottom: 1em;
     border: 1px solid #ccc;
-    border-radius: 4px;
+    border-radius: 8px;
+    box-sizing: border-box;
 }
 
 button {
     width: 100%;
-    padding: 12px;
+    padding: 14px;
     background-color: #007bff;
     color: white;
     border: none;
-    border-radius: 4px;
+    border-radius: 8px;
     cursor: pointer;
     font-size: 1em;
+    font-weight: bold;
     margin-bottom: 0.5em;
+    transition: background-color 0.2s;
 }
 
 button:hover {
@@ -67,7 +73,7 @@ button:hover {
     margin-bottom: 1.5em;
     background-color: #e9ecef;
     padding: 1em;
-    border-radius: 4px;
+    border-radius: 8px;
 }
 
 #user-info p {
@@ -76,12 +82,47 @@ button:hover {
 
 #message-container {
     margin-top: 1em;
-    color: red;
     font-weight: bold;
+    min-height: 20px;
 }
 
-#qr-reader {
+/* --- NUEVOS ESTILOS PARA EL ESCÁNER A PANTALLA COMPLETA --- */
+
+#scanner-screen {
+    position: fixed; /* Se superpone a todo */
+    top: 0;
+    left: 0;
     width: 100%;
-    border: 1px solid #ccc;
-    margin-top: 1em;
+    height: 100%;
+    background-color: #000; /* Fondo negro */
+    display: none; /* Se activa con JS */
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000; /* Se asegura que esté por encima de todo */
+}
+
+#qr-reader-full {
+    width: 100%;
+    height: 100%;
+}
+
+/* Estilo para que el video de la cámara llene el contenedor */
+#qr-reader-full video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+#cancel-scan-btn {
+    position: absolute;
+    bottom: 30px;
+    width: 80%;
+    max-width: 300px;
+    background-color: rgba(220, 53, 69, 0.8); /* Rojo con transparencia */
+    border: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+#cancel-scan-btn:hover {
+    background-color: #dc3545;
 }
