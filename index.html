@@ -8,12 +8,14 @@
 </head>
 <body>
     <div id="app-container">
+        <!-- Pantalla Inicial -->
         <div id="initial-screen" class="screen active">
             <h1>Bienvenido al Juego QR</h1>
             <button id="show-login-btn">Ya estoy registrado</button>
             <button id="show-register-btn">Soy Nuevo</button>
         </div>
 
+        <!-- Pantalla de Registro -->
         <div id="register-screen" class="screen">
             <h2>Registro de Nuevo Usuario</h2>
             <form id="register-form">
@@ -23,6 +25,7 @@
             </form>
         </div>
 
+        <!-- Pantalla de Inicio de Sesión -->
         <div id="login-screen" class="screen">
             <h2>Iniciar Sesión</h2>
             <form id="login-form">
@@ -32,6 +35,7 @@
             </form>
         </div>
 
+        <!-- Pantalla Principal del Juego -->
         <div id="game-screen" class="screen">
             <h2>Menú Principal</h2>
             <div id="user-info">
@@ -41,14 +45,18 @@
             </div>
             <button id="scan-qr-btn">Obtener Puntos (Escanear QR)</button>
             <button id="logout-btn">Cerrar Sesión</button>
-            <div id="qr-reader" style="display: none;"></div>
         </div>
 
         <div id="message-container"></div>
     </div>
 
+    <!-- PANTALLA DE ESCANEO A PANTALLA COMPLETA (NUEVO) -->
+    <div id="scanner-screen" class="screen">
+        <div id="qr-reader-full"></div>
+        <button id="cancel-scan-btn">Cancelar</button>
+    </div>
+
     <script src="https://unpkg.com/html5-qrcode/minified/html5-qrcode.min.js"></script>
     <script src="./script.js"></script>
 </body>
-
 </html>
