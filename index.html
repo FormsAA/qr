@@ -3,72 +3,43 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Juego de QR</title>
-    <link rel="stylesheet" href="./style.css">
+    <title>Juego de Puntos QR</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="./styles.css">
 </head>
-<body>
-    <div id="app-container">
-        <!-- Pantalla Inicial -->
-        <div id="initial-screen" class="screen active">
-            <h1>Bienvenido al Juego QR</h1>
-            <button id="show-login-btn">Ya estoy registrado</button>
-            <button id="show-register-btn">Soy Nuevo</button>
+<body class="bg-gray-900 text-white flex items-center justify-center min-h-screen p-4 font-sans">
+
+    <div class="container w-full max-w-sm">
+        
+        <div id="login-view">
+            <h1 class="text-3xl font-bold text-center text-cyan-400">Juego QR</h1>
+            <p class="text-center text-gray-400 mt-2 mb-8">Ingresa con tu correo</p>
+            <input type="email" id="email-input" placeholder="tu.correo@ejemplo.com" class="w-full p-3 bg-gray-800 border-2 border-gray-700 rounded-lg focus:outline-none focus:border-cyan-400">
+            <div id="login-status" class="text-center text-red-400 h-6 mt-2 text-sm"></div>
+            <button id="login-btn" class="btn-primary">Iniciar Sesión</button>
+            <button id="register-btn" class="btn-secondary">Registrarme (Primer Ingreso)</button>
         </div>
 
-        <!-- Pantalla de Registro -->
-        <div id="register-screen" class="screen">
-            <h2>Registro de Nuevo Usuario</h2>
-            <form id="register-form">
-                <input type="email" id="register-email" placeholder="Ingresa tu correo" required>
-                <button type="submit">Registrarme</button>
-                <button type="button" class="back-btn">Volver</button>
-            </form>
-        </div>
-
-        <!-- Pantalla de Inicio de Sesión -->
-        <div id="login-screen" class="screen">
-            <h2>Iniciar Sesión</h2>
-            <form id="login-form">
-                <input type="email" id="login-email" placeholder="Ingresa tu correo" required>
-                <button type="submit">Ingresar</button>
-                <button type="button" class="back-btn">Volver</button>
-            </form>
-        </div>
-
-        <!-- Pantalla Principal del Juego -->
-        <div id="game-screen" class="screen">
-            <h2>Menú Principal</h2>
-            <div id="user-info">
-                <p><strong>Correo:</strong> <span id="user-email"></span></p>
-                <p><strong>Puntos:</strong> <span id="user-points"></span></p>
-                <p><strong>Posición:</strong> <span id="user-position"></span></p>
+        <div id="menu-view" class="hidden">
+            <div class="text-center p-6 bg-gray-800 rounded-xl">
+                <p class="text-gray-400">Tus Puntos</p>
+                <p id="points-display" class="text-6xl font-bold text-cyan-400 my-2">0</p>
+                <p id="rank-display" class="text-gray-400">Posición: #0</p>
             </div>
-            <button id="scan-qr-btn">Obtener Puntos (Escanear QR)</button>
-            <button id="logout-btn">Cerrar Sesión</button>
+            <button id="scan-btn" class="btn-primary mt-8">Obtener Puntos (Escanear QR)</button>
+             <button id="logout-btn" class="btn-secondary">Cerrar Sesión</button>
         </div>
 
-        <div id="message-container"></div>
-    </div>
-
-    <!-- PANTALLA DE SELECCIÓN DE ESCANEO (NUEVO) -->
-    <div id="scan-choice-screen" class="screen modal-overlay">
-        <div class="modal-content">
-            <h2>Seleccionar Método</h2>
-            <button id="open-camera-btn">Abrir Cámara</button>
-            <button id="upload-image-btn">Subir Imagen de Galería</button>
-            <button id="cancel-choice-btn" class="back-btn">Cancelar</button>
+        <div id="scanner-view" class="hidden">
+            <h2 class="text-xl font-bold text-center mb-4">Escanea un Código QR</h2>
+            <div id="qr-reader" class="w-full bg-gray-800 rounded-lg overflow-hidden border-2 border-gray-700"></div>
+            <div id="scan-status" class="text-center h-10 mt-4 text-sm"></div>
+            <button id="back-to-menu-btn" class="btn-secondary">Volver al Menú</button>
         </div>
-    </div>
-    <input type="file" id="qr-image-input" accept="image/*" style="display: none;">
 
-
-    <!-- PANTALLA DE ESCANEO A PANTALLA COMPLETA -->
-    <div id="scanner-screen" class="screen">
-        <div id="qr-reader-full"></div>
-        <button id="cancel-scan-btn">Cancelar</button>
     </div>
 
-    <script src="https://unpkg.com/html5-qrcode/minified/html5-qrcode.min.js"></script>
-    <script src="./script.js"></script>
+    <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+    <script src="./scripts.js"></script>
 </body>
 </html>
