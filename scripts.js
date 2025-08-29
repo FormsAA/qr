@@ -1,6 +1,6 @@
 // --- CONFIGURACIÓN ---
 // PEGA AQUÍ LA URL DE TU APLICACIÓN WEB OBTENIDA DE GOOGLE APPS SCRIPT
-const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwkE94R8oF38vc6-b1AUBYY87yj-_l5DZKY5v0DN8xtDbyM9AxVNHHkfeVicUmC5nI/exec'; 
+const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbySLWYNwIgD8CErsVio-HQde4KVZdzvswy-zbW6Je0FAkyOzPrl9cjgdejkDePIm2LB/exec'; 
 
 // --- REFERENCIAS A ELEMENTOS DEL DOM ---
 const views = {
@@ -193,3 +193,4 @@ registerBtn.addEventListener('click', handleRegister);
 logoutBtn.addEventListener('click', handleLogout);
 scanBtn.addEventListener('click', startScanner);
 backToMenuBtn.addEventListener('click', stopScannerAndGoToMenu);
+
